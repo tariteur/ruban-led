@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -28,9 +29,9 @@
             flex-direction: column;
             align-items: center;
             position: absolute;
-            overflow-y: auto;
+            overflow-y: auto; /* Ajout d'une barre de défilement verticale si le contenu dépasse la taille du conteneur */
         }
-
+        
         .container > * {
             margin-bottom: 30px;
             margin-left: 30px;
@@ -73,16 +74,18 @@
 
         input:checked + .back {
             background-image: -webkit-linear-gradient(90deg, black 30%, transparent 70%), -webkit-linear-gradient(180deg, rgba(250, 250, 250, 0) 0%, rgba(250, 250, 250, .4) 50%, rgba(150, 150, 150, 0) 100%);
-            box-shadow: 30px 30px 30px -20px rgba(0, 0, 0, .1), -30px 30px 30px -20px rgba(0, 0, 0, .1), 0 30px 30px 0px rgba(0, 0, 0, .2), inset 0 -1px 0 0 #333;
+            box-shadow: 30px 30px 30px -20px rgba(0, 0, 0, .1), -30px 30px 30px -20px rgba(0, 0, 0, .1), 0 30px 30px 0px rgba(0, 0, 0, .2), inset 0 1px 2px 0 rgba(0, 0, 0, .6);
             padding: 2px 4px;
         }
 
-        .l, .r {
+        .l,
+        .r {
             margin: 0 auto;
             text-align: center;
         }
 
-        .on, .off {
+        .on,
+        .off {
             position: absolute;
             text-align: center;
             -webkit-text-shadow: inset 1px 1px 1px black;
@@ -130,7 +133,8 @@
 
         #onoff {
             display: none;
-       
+        }
+
         .but {
             user-select: none;
         }
@@ -209,15 +213,16 @@
 
         @media (min-width: 768px) {
             .container {
-                flex-direction: row;
-                overflow-x: auto;
-                max-width: 80vw;
-                max-height: none;
+                flex-direction: row; /* Changer la direction en ligne pour les écrans plus larges */
+                overflow-x: auto; /* Ajouter une barre de défilement horizontale si le contenu dépasse la largeur du conteneur */
+                max-width: 80vw; /* Limiter la largeur du conteneur à 80% de la largeur de la vue */
+                max-height: none; /* Supprimer la limite de hauteur pour permettre le défilement vertical si nécessaire */
             }
         }
     </style>
 </head>
 <body>
+    <!-- Bouton d'allumage/arrêt -->
     <div class="container">
         <div class="round">
             <input type="checkbox" id="onoff" name="onoff" />
@@ -228,40 +233,53 @@
                 </label>
             </div>
         </div>
+
+        <!-- Switch pour choisir le mode -->
         <div class="switch-button">
             <input class="switch-button-checkbox" type="checkbox" id="modeSwitch">
             <label class="switch-button-label" for="modeSwitch">
                 <span class="switch-button-label-span">Normal</span>
             </label>
         </div>
+    
+        <!-- Sélecteur de couleur HTML5 -->
         <div class="colorpicker">
             <div id="picker"></div>
         </div>
     </div>
+
+    <!-- Script JavaScript pour initialiser le color picker et gérer les événements -->
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5.4.0/dist/iro.min.js"></script>
     <script>
         var startColor = "#ffffff";
         document.body.style.backgroundColor = startColor;
+
         var colorPicker = new iro.ColorPicker("#picker", {
             width: 250,
             color: startColor,
             borderWidth: 1,
             borderColor: "#fff",
         });
-        colorPicker.on('color:change', function (color) {
+
+        colorPicker.on('color:change', function(color) {
             var radio = document.querySelector('input[type=radio]:checked');
             if (radio) {
                 radio.checked = false;
             }
             document.body.style.backgroundColor = color.hexString;
+
             try {
                 sendColor(color.hexString.substring(1));
             } catch (err) {
                 console.error(err);
             }
         });
+
+        // Sélection de l'élément d'interrupteur de mode
         var modeSwitch = document.getElementById('modeSwitch');
-        modeSwitch.addEventListener('change', function () {
+
+        // Ajout d'un gestionnaire d'événement pour l'événement de changement
+        modeSwitch.addEventListener('change', function() {
             if (this.checked) {
                 console.log("Mode Music sélectionné");
                 sendMode("music");
@@ -270,21 +288,28 @@
                 sendMode("normal");
             }
         });
+
+        // Sélection de l'élément d'interrupteur on/off
         var onOffSwitch = document.getElementById('onoff');
-        onOffSwitch.addEventListener('change', function () {
+
+        // Ajout d'un gestionnaire d'événement pour l'événement de changement
+        onOffSwitch.addEventListener('change', function() {
             if (this.checked) {
                 console.log("Ruban led activé");
-                sendOnOffState("off");
+                sendOnOffState("on");
             } else {
                 console.log("Ruban led désactivé");
-                sendOnOffState("on");
+                sendOnOffState("off");
             }
         });
+
         var socket = new WebSocket('ws://' + window.location.hostname + ':81');
-        socket.onopen = function (event) {
+        
+        socket.onopen = function(event) {
             console.log('Connection established');
         };
-        socket.onmessage = function (event) {
+
+        socket.onmessage = function(event) {
             console.log('Message received: ' + event.data);
         };
 

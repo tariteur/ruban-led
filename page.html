@@ -293,7 +293,7 @@
 
         // Ajout d'un gestionnaire d'événement pour l'événement de changement
         onOffSwitch.addEventListener('change', function() {
-            if (this.checked) {
+            if (!this.checked) {
                 console.log("Ruban led activé");
                 sendOnOffState("on");
             } else {

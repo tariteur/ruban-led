@@ -249,8 +249,9 @@
 
     <!-- Script JavaScript pour initialiser le color picker et gérer les événements -->
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5.4.0/dist/iro.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.4.0/+esm"></script>
-    <script>
+    <script type="module">
+        import ReconnectingWebSocket from 'https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.4.0/+esm';
+        
         var startColor = "#ffffff";
         document.body.style.backgroundColor = startColor;
 
